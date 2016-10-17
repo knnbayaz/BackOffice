@@ -52,6 +52,13 @@ namespace BackOffice
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddDbContext<BackOfficeContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<BackOfficeContext>()
+                .AddDefaultTokenProviders();
+
             services.AddMvc();
 
             // Add application services.
@@ -60,7 +67,7 @@ namespace BackOffice
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, BackOfficeContext backOfficeContext)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -92,6 +99,8 @@ namespace BackOffice
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            BackOfficeDBInitializer.Initialize(backOfficeContext);
         }
     }
 }
