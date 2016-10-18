@@ -23,7 +23,7 @@ namespace BackOffice.Models
 
         public virtual MeterInfo MeterInfo { get; set; }
 
-        [ForeignKey("MeterInvoiceDetailInfoForeignKey")]
+        
         public MeterInvoiceDetailInfo MeterInvoiceDetailInfo { get; set; }
 
     }

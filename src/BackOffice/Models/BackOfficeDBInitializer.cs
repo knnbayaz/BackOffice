@@ -11,7 +11,9 @@ namespace BackOffice.Models
 
         public static void Initialize(BackOfficeContext context)
         {
+            
             context.Database.EnsureCreated();
+            
 
             if (context.MeterInfos.Any())
             {

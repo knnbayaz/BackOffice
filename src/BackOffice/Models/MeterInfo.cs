@@ -11,26 +11,25 @@ namespace BackOffice.Models
 
         public int EnxpId { get; set; }
 
+        public string EtsoCode { get; set; }
+
         public int PmumId { get; set; }
 
         public string MeterName { get; set; }
+
+        public string MeterGroup { get; set; }
 
         public string DistrictName { get; set; }
 
         public string CityName { get; set; }
 
-        public enum Tariff {
-            Sanayi = 1,
-            Ticarethane = 2,
-            Mesken = 6
-        }
+        public Tariff TariffType { get; set; }
 
-        public enum AGOG {
-            AG = 1,
-            OG = 2
-        }
+        public AGOG AGOG { get; set; }
 
-        public int MunicipalityTaxRatio { get; set; }
+        public bool MunicipalityTaxRatio { get; set; }
+
+        public bool IsInPortfolio { get; set; }
 
         public virtual ICollection<MeterInvoiceInfo> MeterInvoiceInfos { get; set; }
         public virtual ICollection<GDDKTracking> GDDTrackings { get; set; }

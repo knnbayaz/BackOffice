@@ -9,11 +9,7 @@ namespace BackOffice.Models
     {
         public int MeterInvoiceDetailInfoId { get; set; }
 
-        public enum ConsumeType {
-            Period = 1,
-            Clearing = 2,
-            Correction = 3
-        }
+        public ConsumeType ConsumeType { get; set; }
 
         public decimal Consume { get; set; }
 

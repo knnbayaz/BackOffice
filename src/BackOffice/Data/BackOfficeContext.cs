@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BackOffice.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BackOffice.Data
 {
-    public class BackOfficeContext : DbContext
+    public class BackOfficeContext : IdentityDbContext<ApplicationUser>
     {
         public BackOfficeContext(DbContextOptions<BackOfficeContext> options) : base(options)
         {
@@ -33,10 +34,11 @@ namespace BackOffice.Data
 
             modelBuilder.Entity<GDDKTracking>()
                 .HasOne(m => m.MeterInvoiceDetailInfo)
-                .WithOne(g => g.GDDKTracking);
+                .WithOne(g => g.GDDKTracking)
+                .HasForeignKey<MeterInvoiceDetailInfo>(p => p.MeterInvoiceDetailInfoId);
 
 
-
+            base.OnModelCreating(modelBuilder);
         }
 
     }
