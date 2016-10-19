@@ -9,37 +9,21 @@ namespace BackOffice.BusinessLayer
     public class InvoiceCalculator
     {
 
-        public InvoiceCalculator()
+        public InvoiceCalculator(DateTime period, List<TariffPrice> tariffPriceList)
         {
+            Period = period;
+
+            TariffPriceList = new List<TariffPrice>();
+
+            TariffPriceList = tariffPriceList;
+
             InvoiceDetails = new List<MeterInvoiceDetailInfo>();
         }
 
 
-        public InvoiceCalculator(DateTime period, List<ITariffPriceList> tariffPriceList)
-        {
-            Period = period;
-
-            TariffPriceList = new List<ITariffPriceList>();
-
-            TariffPriceList = tariffPriceList;
-        }
-
-        public InvoiceCalculator(DateTime period, List<ITariffPriceList> tariffPriceList, List<IConsumeProfile> consumeList)
-        {
-            Period = period;
-
-            TariffPriceList = new List<ITariffPriceList>();
-
-            TariffPriceList = tariffPriceList;
-
-            PeriodConsumeList = new List<IConsumeProfile>();
-
-            PeriodConsumeList = consumeList;
-        }
-
         public DateTime Period { get; set; }
 
-        public List<ITariffPriceList> TariffPriceList { get; set; }
+        public List<TariffPrice> TariffPriceList { get; set; }
 
         public List<IConsumeProfile> PeriodConsumeList { get; set; }
 
@@ -89,7 +73,7 @@ namespace BackOffice.BusinessLayer
             }
         }
 
-        public MeterInvoiceDetailInfo CalculateUnitInvoice(MeterInfo meter, IConsumeProfile consume, ConsumeType consumeType)
+        public MeterInvoiceDetailInfo CalculateUnitInvoice(MeterInfo meter, ConsumeProfile consume, ConsumeType consumeType)
         {
 
 
@@ -137,12 +121,11 @@ namespace BackOffice.BusinessLayer
         }
 
 
-        public List<MeterInvoiceInfo> CalculateOverallInvoice(List<MeterInfo> meterList, List<IConsumeProfile> periodConsumeList, List<IConsumeProfile> clearingConsumeList, List<IConsumeProfile> correctionConsumeList )
+        public List<MeterInvoiceInfo> CalculateOverallInvoice(List<MeterInfo> meterList, List<ConsumeProfile> periodConsumeList, List<ConsumeProfile> clearingConsumeList, List<ConsumeProfile> correctionConsumeList )
         {
             var invoiceList = new List<MeterInvoiceInfo>();
-            var periodInvoiceDetail = new MeterInvoiceDetailInfo();
-            var clearingInvoiceDetail = new MeterInvoiceDetailInfo();
-            var correctionInvoiceDetail = new MeterInvoiceDetailInfo();
+
+            var invoiceDetails = new List<MeterInvoiceDetailInfo>();
 
             foreach (var meter in meterList)
             {
@@ -150,31 +133,70 @@ namespace BackOffice.BusinessLayer
                 var periodConsumeInfo = periodConsumeList.Where(p => p.EtsoCode == meter.EtsoCode).FirstOrDefault();
 
                 if (!string.IsNullOrEmpty(periodConsumeInfo.EtsoCode))
-                    periodInvoiceDetail = CalculateUnitInvoice(meter, periodConsumeInfo, ConsumeType.Period);
+                    invoiceDetails.Add(CalculateUnitInvoice(meter, periodConsumeInfo, ConsumeType.Period));
 
 
                 var clearingConsumeInfo = clearingConsumeList.Where(p => p.EtsoCode == meter.EtsoCode).FirstOrDefault();
 
                 if (!string.IsNullOrEmpty(clearingConsumeInfo.EtsoCode))
-                    clearingInvoiceDetail = periodInvoiceDetail = CalculateUnitInvoice(meter, periodConsumeInfo, ConsumeType.Clearing);
+                    invoiceDetails.Add(CalculateUnitInvoice(meter, clearingConsumeInfo, ConsumeType.Clearing));
 
 
                 var correctionConsumeInfo = correctionConsumeList.Where(p => p.EtsoCode == meter.EtsoCode).FirstOrDefault();
 
                 if (!string.IsNullOrEmpty(correctionConsumeInfo.EtsoCode))
-                    correctionInvoiceDetail = CalculateUnitInvoice(meter, periodConsumeInfo, ConsumeType.Correction);
+                    invoiceDetails.Add(CalculateUnitInvoice(meter, correctionConsumeInfo, ConsumeType.Correction));
 
                 var meterInvoiceInfo =new MeterInvoiceInfo()
                 {
                     Period = Period,
-                    MeterInfo = meter
-
+                    MeterInfo = meter,
+                    PeriodConsumeTotalPrice = TotalPriceCalculator(invoiceDetails.Where(i => i.ConsumeType == ConsumeType.Period).ToList()),
+                    ClearingConsumeTotalPrice = TotalPriceCalculator(invoiceDetails.Where(i => i.ConsumeType == ConsumeType.Clearing).ToList()),
+                    CorrectionConsumeTotalPrice = TotalPriceCalculator(invoiceDetails.Where(i => i.ConsumeType == ConsumeType.Correction).ToList()),
+                    Tax = TotalTaxCalculator(invoiceDetails),
+                    TotalPriceWithTax = TotalPriceWithTax(invoiceDetails)
+                    
+                    
                 };
+
+                meterInvoiceInfo.MeterInvoiceDetailInfos = new List<MeterInvoiceDetailInfo>();
+
+                foreach (var item in invoiceDetails)
+                {
+                    meterInvoiceInfo.MeterInvoiceDetailInfos.Add(item);
+                }
+
+                invoiceList.Add(meterInvoiceInfo);
             }
 
 
 
             return invoiceList;
+        }
+
+
+        private decimal TotalPriceCalculator(List<MeterInvoiceDetailInfo> invoiceDetails)
+        {
+            decimal price = 0;
+
+            foreach (var item in invoiceDetails)
+            {
+                price += (item.EnergyPrice + item.DistributionPrice + item.MunicipalityTax + item.EnergyFundTax + item.TRTTax);
+            }
+
+            return price;
+        }
+
+        private decimal TotalTaxCalculator(List<MeterInvoiceDetailInfo> invoiceDetails)
+        {
+
+            return Math.Round(TotalPriceCalculator(invoiceDetails) * 0.18M, 2);
+        }
+
+        private decimal TotalPriceWithTax(List<MeterInvoiceDetailInfo> invoiceDetails)
+        {
+            return TotalPriceCalculator(invoiceDetails) + TotalTaxCalculator(invoiceDetails);
         }
 
 

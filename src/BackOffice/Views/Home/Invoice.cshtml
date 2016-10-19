@@ -1,0 +1,66 @@
+@model IEnumerable<BackOffice.Models.MeterInvoiceInfo>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h2>View</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Period)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PeriodConsumeTotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClearingConsumeTotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CorrectionConsumeTotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tax)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPriceWithTax)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Period)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PeriodConsumeTotalPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClearingConsumeTotalPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CorrectionConsumeTotalPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tax)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPriceWithTax)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MeterInvoiceInfoId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MeterInvoiceInfoId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MeterInvoiceInfoId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<br />

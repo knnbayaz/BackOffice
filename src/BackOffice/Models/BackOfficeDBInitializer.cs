@@ -22,9 +22,9 @@ namespace BackOffice.Models
 
             var meters = new MeterInfo[]
             {
-                new MeterInfo {EnxpId = 1, PmumId = 1, CityName = "İstanbul", DistrictName = "Bedaş", MeterName = "Meter1", MunicipalityTaxRatio = 1},
-                new MeterInfo {EnxpId = 2, PmumId = 2, CityName = "İstanbul", DistrictName = "Ayedaş", MeterName = "Meter2", MunicipalityTaxRatio = 1},
-                new MeterInfo {EnxpId = 3, PmumId = 3, CityName = "Ankara", DistrictName = "Başkent", MeterName = "Meter3", MunicipalityTaxRatio = 1}
+                new MeterInfo {EnxpId = 1, PmumId = 1, CityName = "İstanbul", DistrictName = "Bedaş", MeterName = "Meter1", MunicipalityTaxRatio = true},
+                new MeterInfo {EnxpId = 2, PmumId = 2, CityName = "İstanbul", DistrictName = "Ayedaş", MeterName = "Meter2", MunicipalityTaxRatio = true},
+                new MeterInfo {EnxpId = 3, PmumId = 3, CityName = "Ankara", DistrictName = "Başkent", MeterName = "Meter3", MunicipalityTaxRatio = true}
 
 
             };
